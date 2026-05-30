@@ -202,7 +202,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // 🔥 [추가됨] Firestore 데이터베이스 관련 함수들 임포트
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // 본인의 진짜 Firebase 웹 설정 값
@@ -222,7 +221,7 @@
         try {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
-            db = getFirestore(app); // 🔥 Firestore 초기화
+            db = getFirestore(app); 
             console.log("Firebase & Firestore 초기화 성공");
         } catch (e) {
             console.error("Firebase 초기화 실패:", e);
@@ -345,24 +344,27 @@
                     const formattedReply = data.reply.replace(/\n/g, '<br>');
                     chatLog.innerHTML += `<div class="chat-message ai">🤖 AI:<br>${formattedReply}</div>`;
                     
-                    // 🔥 [핵심 추가 1] 프론트엔드에서 직접 Firestore에 대화 내용 저장!
+                    // 🔥 [핵심 업데이트] Firestore 저장 경로를 유저별로 분류합니다.
                     if (db) {
                         try {
                             const userEmail = auth.currentUser ? auth.currentUser.email : "비회원";
-                            await addDoc(collection(db, "chat_logs"), {
+                            
+                            // 경로를 'users' -> '유저 이메일' -> 'chat_logs' 로 변경하여 그룹화
+                            const userChatLogRef = collection(db, "users", userEmail, "chat_logs");
+                            
+                            await addDoc(userChatLogRef, {
                                 user_message: message,
                                 ai_reply: data.reply,
                                 country_code: data.countryCode || "UNKNOWN",
-                                timestamp: serverTimestamp(),
-                                user_email: userEmail // 누가 질문했는지도 저장합니다
+                                timestamp: serverTimestamp()
                             });
-                            console.log("Firestore에 대화 로그 저장 완료!");
+                            console.log("Firestore 유저별 대화 로그 저장 완료!");
                         } catch (dbError) {
                             console.error("Firestore 저장 실패:", dbError);
                         }
                     }
 
-                    // [기존 유지] 백엔드에서 받은 국가코드(ISO3)로 실제 위경도를 찾아 지도를 날립니다
+                    // 백엔드에서 받은 국가코드(ISO3)로 실제 위경도를 찾아 지도를 날립니다
                     if (data.countryCode && data.countryCode !== "UNKNOWN" && map) {
                         try {
                             const geoResponse = await fetch(`https://restcountries.com/v3.1/alpha/${data.countryCode}`);

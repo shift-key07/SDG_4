@@ -85,7 +85,6 @@
         .login-box button:hover { background: #1d4ed8; }
 
         /* 3. 메인 앱 영역 (지도 & 챗봇) */
-        /* 수정됨: 초기에 display: none 이었으나 화면에는 렌더링 되도록 opacity와 z-index 조절 */
         #main-app { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             opacity: 0; z-index: -1; transition: opacity 0.5s ease; 
@@ -168,10 +167,8 @@
             <div class="login-box">
                 <h2 id="auth-title">EduMap AI 로그인</h2>
                 <p>글로벌 교육 지표 탐색기</p>
-                <!-- 자동완성 경고 해결: autocomplete 추가 -->
                 <input type="email" id="email" placeholder="이메일 입력" autocomplete="username">
                 <input type="password" id="password" placeholder="비밀번호" autocomplete="current-password">
-                <!-- 함수명 handleLogin -> handleAuth 로 변경됨 -->
                 <button onclick="window.handleAuth()" id="auth-btn">로그인 및 시작</button>
                 <p id="login-error" style="color: red; font-size: 12px; margin-top: 10px; display: none;"></p>
                 
@@ -201,14 +198,12 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Firebase SDK (ES 모듈 방식 지원 브라우저용) -->
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // createUserWithEmailAndPassword 추가
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // 🔥 [수정 필요] 여기에 본인의 진짜 Firebase 웹 설정 값들을 넣어야 합니다!
-        // Firebase 콘솔 -> 프로젝트 설정 -> (하단 내 앱) -> '웹' 설정에서 확인 가능
         const firebaseConfig = {
             apiKey: "AIzaSyBhQfXTs8hwRkTClBlv-HXN6PUc-f60jj4",
             authDomain: "sdg4-a5074.firebaseapp.com",
@@ -225,35 +220,30 @@
             auth = getAuth(app);
             console.log("Firebase 초기화 성공");
         } catch (e) {
-            console.error("Firebase 초기화 실패 (config 값을 확인하세요):", e);
+            console.error("Firebase 초기화 실패:", e);
         }
 
-        // --- 지도 초기화 수정: 페이지 로드 시 백그라운드에서 바로 그려둡니다. ---
+        // --- 지도 초기화 ---
         let map = L.map('map', { zoomControl: false }).setView([20, 0], 3);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
         L.control.zoom({ position: 'topright' }).addTo(map);
-        // 지도가 컨테이너 크기를 정확히 인식하도록 딜레이 업데이트
+        
+        let currentMarker = null; // 현재 꽂혀있는 마커를 저장할 변수
+
         setTimeout(() => { map.invalidateSize(); }, 500);
 
         // --- UI 제어 함수들 ---
         window.startApp = function() {
-            // 인트로 숨기기
             document.getElementById('intro-screen').style.display = 'none';
-            // 메인 앱 보여주기 (opacity와 z-index 변경)
             const mainApp = document.getElementById('main-app');
             mainApp.style.opacity = '1';
             mainApp.style.zIndex = '1';
-            
-            // 로그인 모달 띄우기
             document.getElementById('login-overlay').style.display = 'flex';
-            
-            // 지도가 화면에 나타난 후 크기 재계산 (Map container 에러 방지)
             map.invalidateSize();
         };
 
-        // 현재 모드 상태 (로그인 vs 회원가입)
         let isLoginMode = true;
 
         window.toggleAuthMode = function() {
@@ -264,7 +254,7 @@
             const switchLink = document.getElementById('auth-switch-link');
             const errorMsg = document.getElementById('login-error');
             
-            errorMsg.style.display = 'none'; // 전환 시 에러 메시지 초기화
+            errorMsg.style.display = 'none';
 
             if (isLoginMode) {
                 title.innerText = "EduMap AI 로그인";
@@ -303,25 +293,19 @@
                     await createUserWithEmailAndPassword(auth, email, password);
                 }
                 
-                // 성공 처리
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('chat-container').style.display = 'flex';
                 
             } catch (error) {
                 console.error("Auth failed:", error);
                 errorMsg.style.display = 'block';
-                
-                // 에러 메시지 한글화
                 if (error.code === 'auth/email-already-in-use') {
                     errorMsg.innerText = "이미 가입된 이메일입니다.";
                 } else if (error.code === 'auth/weak-password') {
                     errorMsg.innerText = "비밀번호는 6자리 이상이어야 합니다.";
-                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    errorMsg.innerText = "이메일이나 비밀번호가 올바르지 않습니다.";
                 } else {
                     errorMsg.innerText = "인증 실패: 정보를 확인해주세요.";
                 }
-
                 authBtn.innerText = isLoginMode ? "로그인 및 시작" : "가입하고 시작하기";
                 authBtn.disabled = false;
             }
@@ -356,9 +340,34 @@
                     const formattedReply = data.reply.replace(/\n/g, '<br>');
                     chatLog.innerHTML += `<div class="chat-message ai">🤖 AI:<br>${formattedReply}</div>`;
                     
-                    if (data.coordinates && data.coordinates[0] !== 0 && map) {
-                         map.flyTo(data.coordinates, 5, { animate: true, duration: 1.5 });
+                    // 🔥 [핵심 추가] 백엔드에서 받은 국가코드(ISO3)로 실제 위경도를 찾아 지도를 날립니다!
+                    if (data.countryCode && data.countryCode !== "UNKNOWN" && map) {
+                        try {
+                            // REST Countries API 호출 (무료, 별도 키 불필요)
+                            const geoResponse = await fetch(`https://restcountries.com/v3.1/alpha/${data.countryCode}`);
+                            const geoData = await geoResponse.json();
+                            
+                            if (geoData && geoData[0] && geoData[0].latlng) {
+                                const lat = geoData[0].latlng[0];
+                                const lng = geoData[0].latlng[1];
+                                const countryName = geoData[0].name.common;
+                                
+                                // 해당 국가로 부드럽게 줌인 (줌 레벨 5)
+                                map.flyTo([lat, lng], 5, { animate: true, duration: 2 });
+                                
+                                // 기존 마커 지우고 새로운 마커 꽂기
+                                if (currentMarker) {
+                                    map.removeLayer(currentMarker);
+                                }
+                                currentMarker = L.marker([lat, lng]).addTo(map)
+                                    .bindPopup(`<b>${countryName}</b><br>SDG 4 교육 지표 분석 완료`)
+                                    .openPopup();
+                            }
+                        } catch (err) {
+                            console.error("좌표 검색 실패:", err);
+                        }
                     }
+                    
                 } else {
                     chatLog.innerHTML += `<div class="chat-message ai" style="color:red;">❌ 에러: ${data.error}</div>`;
                 }

@@ -198,12 +198,14 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Auth + Firestore 추가) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // 🔥 [추가됨] Firestore 데이터베이스 관련 함수들 임포트
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 🔥 [수정 필요] 여기에 본인의 진짜 Firebase 웹 설정 값들을 넣어야 합니다!
+        // 본인의 진짜 Firebase 웹 설정 값
         const firebaseConfig = {
             apiKey: "AIzaSyBhQfXTs8hwRkTClBlv-HXN6PUc-f60jj4",
             authDomain: "sdg4-a5074.firebaseapp.com",
@@ -215,10 +217,13 @@
         };
 
         let auth;
+        let db; // Firestore 변수 추가
+        
         try {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
-            console.log("Firebase 초기화 성공");
+            db = getFirestore(app); // 🔥 Firestore 초기화
+            console.log("Firebase & Firestore 초기화 성공");
         } catch (e) {
             console.error("Firebase 초기화 실패:", e);
         }
@@ -230,7 +235,7 @@
         }).addTo(map);
         L.control.zoom({ position: 'topright' }).addTo(map);
         
-        let currentMarker = null; // 현재 꽂혀있는 마커를 저장할 변수
+        let currentMarker = null;
 
         setTimeout(() => { map.invalidateSize(); }, 500);
 
@@ -340,10 +345,26 @@
                     const formattedReply = data.reply.replace(/\n/g, '<br>');
                     chatLog.innerHTML += `<div class="chat-message ai">🤖 AI:<br>${formattedReply}</div>`;
                     
-                    // 🔥 [핵심 추가] 백엔드에서 받은 국가코드(ISO3)로 실제 위경도를 찾아 지도를 날립니다!
+                    // 🔥 [핵심 추가 1] 프론트엔드에서 직접 Firestore에 대화 내용 저장!
+                    if (db) {
+                        try {
+                            const userEmail = auth.currentUser ? auth.currentUser.email : "비회원";
+                            await addDoc(collection(db, "chat_logs"), {
+                                user_message: message,
+                                ai_reply: data.reply,
+                                country_code: data.countryCode || "UNKNOWN",
+                                timestamp: serverTimestamp(),
+                                user_email: userEmail // 누가 질문했는지도 저장합니다
+                            });
+                            console.log("Firestore에 대화 로그 저장 완료!");
+                        } catch (dbError) {
+                            console.error("Firestore 저장 실패:", dbError);
+                        }
+                    }
+
+                    // [기존 유지] 백엔드에서 받은 국가코드(ISO3)로 실제 위경도를 찾아 지도를 날립니다
                     if (data.countryCode && data.countryCode !== "UNKNOWN" && map) {
                         try {
-                            // REST Countries API 호출 (무료, 별도 키 불필요)
                             const geoResponse = await fetch(`https://restcountries.com/v3.1/alpha/${data.countryCode}`);
                             const geoData = await geoResponse.json();
                             
@@ -352,10 +373,8 @@
                                 const lng = geoData[0].latlng[1];
                                 const countryName = geoData[0].name.common;
                                 
-                                // 해당 국가로 부드럽게 줌인 (줌 레벨 5)
                                 map.flyTo([lat, lng], 5, { animate: true, duration: 2 });
                                 
-                                // 기존 마커 지우고 새로운 마커 꽂기
                                 if (currentMarker) {
                                     map.removeLayer(currentMarker);
                                 }

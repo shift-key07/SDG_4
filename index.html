@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMap AI - 글로벌 교육 지표 챗봇</title>
+    
+    <!-- Leaflet JS & CSS for mapping -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            overflow: hidden; /* Prevent scrolling, UI is absolute/fixed */
+        }
+
+        /* --- Map Container --- */
+        #map-container {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        /* --- Login Modal Overlay --- */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(17, 24, 39, 0.7); /* Dark semi-transparent */
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .login-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .login-box p {
+            margin: 0 0 1.5rem 0;
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            box-sizing: border-box; /* Ensure padding doesn't affect width */
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* --- Chatbot Interface --- */
+        #chat-interface {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 700px;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            z-index: 50;
+            display: none; /* Hidden until login */
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #chat-messages {
+            height: 250px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .message.ai {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .message.user {
+            background-color: var(--primary-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        #chat-input-area {
+            display: flex;
+            padding: 1rem;
+            background: white;
+            gap: 0.5rem;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 9999px; /* Pill shape */
+            font-size: 0.875rem;
+            outline: none;
+        }
+
+        #chat-input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        #send-btn {
+            padding: 0 1.5rem;
+            background-color: #10b981; /* Emerald green for send */
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #send-btn:hover {
+            background-color: #059669;
+        }
+        
+        /* Mobile responsiveness for chat */
+        @media (max-width: 600px) {
+            #chat-interface {
+                bottom: 1rem;
+                width: 95%;
+            }
+            #chat-messages {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- The map sits at the very bottom z-layer -->
+    <div id="map-container"></div>
+
+    <!-- Login Modal -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h1>EduMap AI</h1>
+            <p>글로벌 교육 지표 탐색 시스템</p>
+            
+            <div class="input-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" class="login-input" placeholder="admin@edumap.com" value="admin@edumap.com">
+            </div>
+            
+            <div class="input-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" class="login-input" placeholder="••••••••" value="123456">
+            </div>
+            
+            <button class="btn-primary" onclick="performLogin()">시스템 접속하기</button>
+        </div>
+    </div>
+
+    <!-- Chatbot Interface (Hidden by default) -->
+    <div id="chat-interface">
+        <div id="chat-messages">
+            <!-- Initial AI Greeting -->
+            <div class="message ai">
+                👋 환영합니다! 전 세계 국가의 <b>SDG 4 (양질의 교육)</b> 지표에 대해 질문해주세요. 특정 국가를 언급하면 지도가 이동합니다.
+            </div>
+        </div>
+        
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="예: 필리핀의 교육 인프라는 어떤 상태야?" onkeypress="handleKeyPress(event)">
+            <button id="send-btn" onclick="processMessage()">전송</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Map Initialization (Leaflet) ---
+        // Initialize map looking at the world
+        const map = L.map('map-container', {
+            zoomControl: false, // We'll reposition it
+            minZoom: 2
+        }).setView([20, 0], 3);
+
+        // Add standard OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Move zoom control to bottom right so it doesn't overlap with our UI
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+
+
+        // --- 2. UI Logic: Login ---
+        function performLogin() {
+            const overlay = document.getElementById('login-overlay');
+            const chatInterface = document.getElementById('chat-interface');
+            
+            // Fade out animation for overlay
+            overlay.style.opacity = '0';
+            
+            // Wait for fade out, then hide overlay and show chat
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                chatInterface.style.display = 'flex';
+                // Trigger a map resize event because showing the UI might have changed the view port
+                map.invalidateSize(); 
+            }, 300);
+            
+            // Note: In Phase 3, this is where you will call Firebase Authentication
+        }
+
+
+        // --- 3. UI Logic: Chatbot & Map Interaction ---
+        function processMessage() {
+            const inputElement = document.getElementById('chat-input');
+            const messageText = inputElement.value.trim();
+            
+            if (!messageText) return;
+
+            // 1. Display User Message
+            addMessageToChat(messageText, 'user');
+            inputElement.value = ''; // Clear input
+
+            // 2. Simulate AI Processing & DB Retrieval (RAG Simulation)
+            setTimeout(() => {
+                // Check if user mentioned '필리핀' (Philippines)
+                if (messageText.includes('필리핀')) {
+                    
+                    const aiResponse = "필리핀(PHL)의 데이터를 확인했습니다. 필리핀의 초등 교육 등록률은 지속적으로 개선되고 있으나, 지역 간 인프라 격차가 여전히 존재합니다. 지도를 필리핀으로 이동합니다.";
+                    addMessageToChat(aiResponse, 'ai');
+                    
+                    // Fly to Philippines coordinates (Latitude: 12.8797, Longitude: 121.7740)
+                    // Zoom level 6 is good for showing a whole country
+                    map.flyTo([12.8797, 121.7740], 6, {
+                        animate: true,
+                        duration: 1.5 // seconds
+                    });
+                    
+                } 
+                // Check for another sample country: Kenya
+                else if (messageText.includes('케냐')) {
+                    
+                    const aiResponse = "케냐(KEN)의 데이터를 불러옵니다. 케냐는 교육 예산을 늘리고 있으나 농촌 지역의 교사 부족 현상이 SDG 4 달성의 주요 과제입니다.";
+                    addMessageToChat(aiResponse, 'ai');
+                    
+                    // Fly to Kenya (Latitude: -0.0236, Longitude: 37.9062)
+                    map.flyTo([-0.0236, 37.9062], 6, { animate: true, duration: 1.5 });
+                    
+                }
+                // Fallback response
+                else {
+                    const aiResponse = "API 연동 대기 중입니다. 현재는 '필리핀' 또는 '케냐'와 관련된 질문에 지도가 반응하도록 테스트가 구성되어 있습니다.";
+                    addMessageToChat(aiResponse, 'ai');
+                }
+            }, 600); // 0.6s delay to simulate API thinking time
+        }
+
+        // Helper function to append messages to the chat UI
+        function addMessageToChat(text, senderType) {
+            const chatMessagesContainer = document.getElementById('chat-messages');
+            
+            const messageDiv = document.createElement('div');
+            // Add base class and specific class ('user' or 'ai')
+            messageDiv.className = `message ${senderType}`; 
+            
+            // Add emoji based on sender
+            const prefix = senderType === 'ai' ? '🤖 ' : '👤 ';
+            messageDiv.innerHTML = prefix + text;
+            
+            chatMessagesContainer.appendChild(messageDiv);
+            
+            // Auto-scroll to the bottom of the chat
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+
+        // Allow sending message by pressing Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                processMessage();
+            }
+        }
+    </script>
+</body>
+</html>

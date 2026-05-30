@@ -163,16 +163,23 @@
     <div id="main-app">
         <div id="map"></div>
         
-        <!-- 2. 로그인 모달 (초기엔 숨김 처리 안함, z-index로 조정) -->
+        <!-- 2. 로그인 및 회원가입 모달 -->
         <div id="login-overlay" style="display: none;">
             <div class="login-box">
-                <h2>EduMap AI</h2>
+                <h2 id="auth-title">EduMap AI 로그인</h2>
                 <p>글로벌 교육 지표 탐색기</p>
                 <!-- 자동완성 경고 해결: autocomplete 추가 -->
                 <input type="email" id="email" placeholder="이메일 입력" autocomplete="username">
                 <input type="password" id="password" placeholder="비밀번호" autocomplete="current-password">
-                <button onclick="window.handleLogin()" id="login-btn">로그인 및 시작</button>
+                <!-- 함수명 handleLogin -> handleAuth 로 변경됨 -->
+                <button onclick="window.handleAuth()" id="auth-btn">로그인 및 시작</button>
                 <p id="login-error" style="color: red; font-size: 12px; margin-top: 10px; display: none;"></p>
+                
+                <!-- 회원가입/로그인 전환 버튼 -->
+                <div style="margin-top: 15px; font-size: 14px; color: #4b5563;">
+                    <span id="auth-switch-text">아직 계정이 없으신가요?</span>
+                    <a href="#" onclick="window.toggleAuthMode()" id="auth-switch-link" style="color: #2563eb; text-decoration: none; font-weight: bold;">회원가입</a>
+                </div>
             </div>
         </div>
 
@@ -197,7 +204,8 @@
     <!-- Firebase SDK (ES 모듈 방식 지원 브라우저용) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // createUserWithEmailAndPassword 추가
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // 🔥 [매우 중요] Vercel 배포 시, 이 부분은 본인의 Firebase config로 꼭 교체해야 합니다!
         const firebaseConfig = {
@@ -243,11 +251,37 @@
             map.invalidateSize();
         };
 
-        window.handleLogin = async function() {
+        // 현재 모드 상태 (로그인 vs 회원가입)
+        let isLoginMode = true;
+
+        window.toggleAuthMode = function() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('auth-btn');
+            const switchText = document.getElementById('auth-switch-text');
+            const switchLink = document.getElementById('auth-switch-link');
+            const errorMsg = document.getElementById('login-error');
+            
+            errorMsg.style.display = 'none'; // 전환 시 에러 메시지 초기화
+
+            if (isLoginMode) {
+                title.innerText = "EduMap AI 로그인";
+                btn.innerText = "로그인 및 시작";
+                switchText.innerText = "아직 계정이 없으신가요?";
+                switchLink.innerText = "회원가입";
+            } else {
+                title.innerText = "EduMap AI 회원가입";
+                btn.innerText = "가입하고 시작하기";
+                switchText.innerText = "이미 계정이 있으신가요?";
+                switchLink.innerText = "로그인";
+            }
+        };
+
+        window.handleAuth = async function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('login-error');
-            const loginBtn = document.getElementById('login-btn');
+            const authBtn = document.getElementById('auth-btn');
 
             if(!email || !password) {
                 errorMsg.innerText = "이메일과 비밀번호를 입력해주세요.";
@@ -255,24 +289,39 @@
                 return;
             }
 
-            loginBtn.innerText = "로그인 중...";
-            loginBtn.disabled = true;
+            authBtn.innerText = isLoginMode ? "로그인 중..." : "가입 중...";
+            authBtn.disabled = true;
 
             try {
                 if(!auth) throw new Error("Firebase Auth가 초기화되지 않았습니다.");
                 
-                await signInWithEmailAndPassword(auth, email, password);
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
                 
-                // 로그인 성공
+                // 성공 처리
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('chat-container').style.display = 'flex';
                 
             } catch (error) {
-                console.error("Login failed:", error);
-                errorMsg.innerText = "로그인 실패: 계정 정보나 Firebase 설정을 확인해주세요.";
+                console.error("Auth failed:", error);
                 errorMsg.style.display = 'block';
-                loginBtn.innerText = "로그인 및 시작";
-                loginBtn.disabled = false;
+                
+                // 에러 메시지 한글화
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMsg.innerText = "이미 가입된 이메일입니다.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMsg.innerText = "비밀번호는 6자리 이상이어야 합니다.";
+                } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    errorMsg.innerText = "이메일이나 비밀번호가 올바르지 않습니다.";
+                } else {
+                    errorMsg.innerText = "인증 실패: 정보를 확인해주세요.";
+                }
+
+                authBtn.innerText = isLoginMode ? "로그인 및 시작" : "가입하고 시작하기";
+                authBtn.disabled = false;
             }
         };
 

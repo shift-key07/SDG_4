@@ -207,14 +207,16 @@
         // createUserWithEmailAndPassword 추가
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // 🔥 [매우 중요] Vercel 배포 시, 이 부분은 본인의 Firebase config로 꼭 교체해야 합니다!
+        // 🔥 [수정 필요] 여기에 본인의 진짜 Firebase 웹 설정 값들을 넣어야 합니다!
+        // Firebase 콘솔 -> 프로젝트 설정 -> (하단 내 앱) -> '웹' 설정에서 확인 가능
         const firebaseConfig = {
-            apiKey: "AIzaSyB-YOUR-API-KEY",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+            apiKey: "AIzaSyBhQfXTs8hwRkTClBlv-HXN6PUc-f60jj4",
+            authDomain: "sdg4-a5074.firebaseapp.com",
+            projectId: "sdg4-a5074",
+            storageBucket: "sdg4-a5074.firebasestorage.app",
+            messagingSenderId: "346078526403",
+            appId: "1:346078526403:web:6093f0d83a2f8bc52adb76",
+            measurementId: "G-FRZW3T2YJR"
         };
 
         let auth;

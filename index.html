@@ -1,241 +1,109 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduMap AI - 글로벌 교육 지표 챗봇</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Pretendard', sans-serif; }
-        #map { width: 100%; height: 100vh; z-index: 1; }
-
-        /* 인트로(소개) 화면 - 홍보 페이지 스타일 */
-        #intro-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff; z-index: 200; overflow-y: auto;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        /* 네비게이션 바 */
-        .navbar { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 20px 50px; background: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 210; 
-            border-bottom: 1px solid #eee; 
-        }
-        .navbar .logo { font-size: 1.5rem; font-weight: 800; color: #2563eb; }
-        .navbar .nav-links a { 
-            margin-left: 30px; text-decoration: none; color: #4b5563; 
-            font-weight: 600; transition: color 0.3s; 
-        }
-        .navbar .nav-links a:hover { color: #2563eb; }
-
-        /* 메인 히어로 영역 */
-        .hero { 
-            position: relative; padding: 160px 20px; text-align: center; color: white; 
-            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; 
-        }
-        .hero-overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.75); z-index: 1; 
-        }
-        .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .hero p { font-size: 1.2rem; margin-bottom: 40px; color: #e2e8f0; line-height: 1.6; }
-        
-        .start-btn {
-            padding: 18px 48px; font-size: 1.2rem; background: #2563eb; color: white;
-            border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4); transition: all 0.3s ease;
-        }
-        .start-btn:hover { background: #1d4ed8; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.6); }
-
-        /* 주요 기능 소개 영역 */
-        .features { padding: 100px 20px; background: #f8fafc; text-align: center; }
-        .features h2 { font-size: 2.5rem; margin-bottom: 60px; color: #1e293b; font-weight: 800; }
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .feature-card { 
-            background: white; padding: 50px 30px; border-radius: 24px; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); transition: transform 0.3s, box-shadow 0.3s; 
-        }
-        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
-        .feature-card .icon { font-size: 3.5rem; margin-bottom: 25px; }
-        .feature-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #0f172a; font-weight: 700; }
-        .feature-card p { color: #64748b; line-height: 1.7; }
-        
-        /* 홍보 페이지 푸터 */
-        .promo-footer { background: #0f172a; color: #94a3b8; text-align: center; padding: 40px 20px; font-size: 0.9rem; }
-
-        /* 로그인 모달 */
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); z-index: 100;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .login-box {
-            background: white; padding: 40px; border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2); width: 300px; text-align: center;
-        }
-        .login-box h2 { margin-top: 0; color: #333; }
-        .login-box input {
-            width: 90%; padding: 10px; margin: 10px 0;
-            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
-        }
-        .login-box button {
-            width: 90%; padding: 12px; background: #2563eb; color: white;
-            border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
-            margin-top: 15px;
-        }
-        .login-box button:hover { background: #1d4ed8; }
-
-        /* 챗봇 창 */
-        #chat-container {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 600px; background: white; border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 50; display: none;
-            overflow: hidden;
-        }
-        #chat-log { height: 250px; padding: 20px; overflow-y: auto; background: #f9fafb; border-bottom: 1px solid #eee; }
-        .chat-message { margin-bottom: 12px; line-height: 1.5; font-size: 14px; }
-        .chat-message.ai { color: #2563eb; font-weight: 500; }
-        .chat-message.user { color: #333; font-weight: 600; text-align: right; }
-        .chat-message.loading { color: #888; font-style: italic; }
-        
-        #input-area { display: flex; padding: 10px; background: #fff; }
-        #input-area input {
-            flex-grow: 1; padding: 12px; border: 1px solid #ddd;
-            border-radius: 8px; outline: none; margin-right: 10px;
-        }
-        #input-area button {
-            padding: 0 20px; background: #10b981; color: white;
-            border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
-            white-space: nowrap;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 1. 홍보용 인트로(랜딩) 페이지 -->
-    <div id="intro-screen">
-        <!-- 상단 네비게이션 바 -->
-        <nav class="navbar">
-            <div class="logo">EduMap AI</div>
-            <div class="nav-links">
-                <a href="#features">소개 및 기능</a>
-                <a href="https://github.com" target="_blank">오픈소스</a>
-            </div>
-        </nav>
-
-        <!-- 메인 히어로 섹션 -->
-        <section class="hero">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1>전 세계 교육의 미래를<br>데이터로 마주하다</h1>
-                <p>EduMap AI는 UN의 지속가능발전목표(SDG 4) 데이터를 기반으로<br>전 세계 국가들의 교육 인프라 현황을 시각화하고 AI 분석을 제공하는 플랫폼입니다.</p>
-                <button onclick="showLogin()" class="start-btn">지금 바로 시작하기</button>
-            </div>
-        </section>
-
-        <!-- 핵심 기능 소개 섹션 -->
-        <section id="features" class="features">
-            <h2>EduMap AI 핵심 가치</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="icon">🌍</div>
-                    <h3>글로벌 교육 데이터</h3>
-                    <p>Kaggle의 최신 SDG 4 통계 데이터를 바탕으로 각 국가의 문맹률, 교육 예산, 교사 비율 등을 정확하게 제공합니다.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">🤖</div>
-                    <h3>AI 인사이트 도출</h3>
-                    <p>단순한 수치를 넘어, OpenAI가 데이터를 분석하여 각 국가의 교육 인프라 현황과 해결책을 자연어로 설명해 줍니다.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">🗺️</div>
-                    <h3>인터랙티브 맵 연동</h3>
-                    <p>궁금한 국가를 검색하면 지도가 해당 위치로 즉시 이동하여 위치 기반의 직관적인 데이터 탐색 경험을 선사합니다.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 푸터 -->
-        <footer class="promo-footer">
-            <p>&copy; 2026 EduMap AI. All rights reserved. | SDG 4 Quality Education Project</p>
-        </footer>
-    </div>
-
-    <!-- 2. 로그인 모달 (초기엔 숨김) -->
+<!-- ... existing code (인트로, CSS 영역 그대로 유지) ... -->
+    <!-- 2. 로그인 모달 -->
     <div id="login-overlay" style="display: none;">
         <div class="login-box">
             <h2>EduMap AI</h2>
             <p>글로벌 교육 지표 탐색기</p>
-            <input type="email" id="email" placeholder="이메일 입력" value="admin@test.com">
-            <input type="password" id="password" placeholder="비밀번호" value="1234">
-            <button onclick="handleLogin()">로그인 시작하기</button>
+            <input type="email" id="email" placeholder="이메일 입력">
+            <input type="password" id="password" placeholder="비밀번호">
+            <button onclick="handleLogin()" id="login-btn">로그인 및 시작</button>
+            <p id="login-error" style="color: red; font-size: 12px; margin-top: 10px; display: none;"></p>
         </div>
     </div>
 
-    <div id="map"></div>
-
-    <div id="chat-container">
-        <div id="chat-log">
-            <div class="chat-message ai">🤖 환영합니다! 전 세계 교육 현황에 대해 물어보세요.<br>(예: "필리핀 교육 환경 어때?", "케냐는?")</div>
-        </div>
-        <div id="input-area">
-            <input type="text" id="user-input" placeholder="국가를 포함하여 질문해보세요..." onkeypress="handleEnter(event)">
-            <button onclick="sendMessage()" id="send-btn">전송</button>
-        </div>
-    </div>
+<!-- ... existing code (지도, 챗봇 HTML 영역 그대로 유지) ... -->
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
+
+    <!-- [추가] Firebase SDK (모듈 방식) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // 🔥 중요: 본인의 Firebase 프로젝트 설정값으로 교체해야 합니다!
+        // Firebase 콘솔 -> 프로젝트 설정 -> 내 앱(웹) 등록 시 나오는 config 값
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhQfXTs8hwRkTClBlv-HXN6PUc-f60jj4", 
+            authDomain: "sdg4-a5074.firebaseapp.com",
+            projectId: "sdg4-a5074",
+            storageBucket: "sdg4-a5074.firebasestorage.app",
+            messagingSenderId: "346078526403",
+            appId: "1:346078526403:web:6093f0d83a2f8bc52adb76",
+            measurementId: "G-FRZW3T2YJR"
+        };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // 지도 초기화 로직 (기존과 동일)
         const map = L.map('map', { zoomControl: false }).setView([20, 0], 3);
-        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // 인트로 화면에서 로그인 화면으로 부드럽게 전환
-        function showLogin() {
+        // 글로벌 스코프로 함수 노출 (HTML onclick에서 호출하기 위함)
+        window.showLogin = function() {
             const intro = document.getElementById('intro-screen');
-            intro.style.opacity = '0'; // 페이드아웃 애니메이션
-            
+            intro.style.opacity = '0';
             setTimeout(() => {
                 intro.style.display = 'none';
                 document.getElementById('login-overlay').style.display = 'flex';
             }, 500);
-        }
+        };
 
-        function handleLogin() {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'block';
-        }
+        // 진짜 Firebase 로그인 처리 함수
+        window.handleLogin = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
 
-        // 실제 백엔드 API를 호출하는 로직으로 변경됨
-        async function sendMessage() {
+            if(!email || !password) {
+                errorMsg.innerText = "이메일과 비밀번호를 입력해주세요.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            loginBtn.innerText = "로그인 중...";
+            loginBtn.disabled = true;
+
+            try {
+                // Firebase 인증 요청
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                // 로그인 성공 시 화면 전환
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'block';
+            } catch (error) {
+                // 로그인 실패 시 에러 표시
+                console.error("Login failed:", error);
+                errorMsg.innerText = "로그인 실패: 계정 정보를 확인해주세요.";
+                errorMsg.style.display = 'block';
+                loginBtn.innerText = "로그인 및 시작";
+                loginBtn.disabled = false;
+            }
+        };
+
+        // 메시지 전송 로직 (기존과 동일하되 window 객체에 할당)
+        window.sendMessage = async function() {
+            // ... (기존 sendMessage 로직 내용 복사) ...
             const inputField = document.getElementById('user-input');
             const message = inputField.value.trim();
             const btn = document.getElementById('send-btn');
             if (!message) return;
 
             const chatLog = document.getElementById('chat-log');
-            
-            // 사용자 메시지 추가
             chatLog.innerHTML += `<div class="chat-message user">👤 나: ${message}</div>`;
             inputField.value = '';
             
-            // 로딩 메시지 추가
             const loadingId = 'loading-' + Date.now();
             chatLog.innerHTML += `<div id="${loadingId}" class="chat-message loading">🤖 AI가 데이터를 분석 중입니다...</div>`;
             chatLog.scrollTop = chatLog.scrollHeight;
-            
             btn.disabled = true;
 
             try {
-                // Vercel 백엔드 API 호출 (/api/chat)
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -243,15 +111,10 @@
                 });
 
                 const data = await response.json();
-                
-                // 로딩 메시지 삭제
                 document.getElementById(loadingId).remove();
 
                 if (response.ok) {
-                    // AI 답변 출력
                     chatLog.innerHTML += `<div class="chat-message ai">🤖 AI: ${data.reply}</div>`;
-                    
-                    // 백엔드가 좌표를 넘겨주면 지도를 해당 위치로 줌인
                     if (data.coordinates) {
                         map.flyTo(data.coordinates, 6, { animate: true, duration: 2 });
                     }
@@ -260,17 +123,17 @@
                 }
             } catch (err) {
                 document.getElementById(loadingId).remove();
-                chatLog.innerHTML += `<div class="chat-message ai" style="color:red;">❌ 서버 통신 실패. Vercel 배포 상태를 확인해주세요.</div>`;
+                chatLog.innerHTML += `<div class="chat-message ai" style="color:red;">❌ 서버 통신 실패.</div>`;
             }
 
             btn.disabled = false;
             chatLog.scrollTop = chatLog.scrollHeight;
             inputField.focus();
-        }
+        };
 
-        function handleEnter(event) {
-            if (event.key === 'Enter') sendMessage();
-        }
+        window.handleEnter = function(event) {
+            if (event.key === 'Enter') window.sendMessage();
+        };
     </script>
 </body>
 </html>

@@ -1,0 +1,623 @@
+{
+    "Nigeria": {
+        "country_code": "NGA",
+        "illiteracy_rate": "68.9%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "10.6%",
+        "primary_completion_rate": "79.9%",
+        "reading_comprehension": "47.1%",
+        "pupil_teacher_ratio": "약 35.1명"
+    },
+    "Ethiopia": {
+        "country_code": "ETH",
+        "illiteracy_rate": "82.2%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "20.1%",
+        "primary_completion_rate": "55.9%",
+        "reading_comprehension": "3.8%",
+        "pupil_teacher_ratio": "약 54.7명"
+    },
+    "DR Congo": {
+        "country_code": "COD",
+        "illiteracy_rate": "84.4%",
+        "school_electricity": "9.4%",
+        "out_of_school_rate": "15.9%",
+        "primary_completion_rate": "58.7%",
+        "reading_comprehension": "6.5%",
+        "pupil_teacher_ratio": "약 55.5명"
+    },
+    "Tanzania": {
+        "country_code": "TZA",
+        "illiteracy_rate": "56.7%",
+        "school_electricity": "37.3%",
+        "out_of_school_rate": "7.8%",
+        "primary_completion_rate": "79.1%",
+        "reading_comprehension": "46.3%",
+        "pupil_teacher_ratio": "약 50.9명"
+    },
+    "Kenya": {
+        "country_code": "KEN",
+        "illiteracy_rate": "46.4%",
+        "school_electricity": "82.6%",
+        "out_of_school_rate": "8.8%",
+        "primary_completion_rate": "76.2%",
+        "reading_comprehension": "39.6%",
+        "pupil_teacher_ratio": "약 33.5명"
+    },
+    "Uganda": {
+        "country_code": "UGA",
+        "illiteracy_rate": "91.5%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "18.7%",
+        "primary_completion_rate": "45.4%",
+        "reading_comprehension": "5.0%",
+        "pupil_teacher_ratio": "약 74.8명"
+    },
+    "Mozambique": {
+        "country_code": "MOZ",
+        "illiteracy_rate": "83.4%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "18.5%",
+        "primary_completion_rate": "67.4%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 71.3명"
+    },
+    "Ghana": {
+        "country_code": "GHA",
+        "illiteracy_rate": "66.8%",
+        "school_electricity": "25.0%",
+        "out_of_school_rate": "1.8%",
+        "primary_completion_rate": "80.2%",
+        "reading_comprehension": "44.6%",
+        "pupil_teacher_ratio": "약 37.5명"
+    },
+    "Mali": {
+        "country_code": "MLI",
+        "illiteracy_rate": "91.8%",
+        "school_electricity": "15.6%",
+        "out_of_school_rate": "17.0%",
+        "primary_completion_rate": "66.6%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 59.5명"
+    },
+    "Niger": {
+        "country_code": "NER",
+        "illiteracy_rate": "93.2%",
+        "school_electricity": "6.7%",
+        "out_of_school_rate": "17.2%",
+        "primary_completion_rate": "61.0%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 42.2명"
+    },
+    "Burkina Faso": {
+        "country_code": "BFA",
+        "illiteracy_rate": "93.3%",
+        "school_electricity": "20.7%",
+        "out_of_school_rate": "14.2%",
+        "primary_completion_rate": "60.3%",
+        "reading_comprehension": "6.2%",
+        "pupil_teacher_ratio": "약 66.3명"
+    },
+    "Malawi": {
+        "country_code": "MWI",
+        "illiteracy_rate": "88.4%",
+        "school_electricity": "27.3%",
+        "out_of_school_rate": "22.3%",
+        "primary_completion_rate": "45.5%",
+        "reading_comprehension": "7.8%",
+        "pupil_teacher_ratio": "약 68.1명"
+    },
+    "Senegal": {
+        "country_code": "SEN",
+        "illiteracy_rate": "71.4%",
+        "school_electricity": "44.1%",
+        "out_of_school_rate": "12.2%",
+        "primary_completion_rate": "69.5%",
+        "reading_comprehension": "26.9%",
+        "pupil_teacher_ratio": "약 41.8명"
+    },
+    "Chad": {
+        "country_code": "TCD",
+        "illiteracy_rate": "88.9%",
+        "school_electricity": "2.9%",
+        "out_of_school_rate": "19.8%",
+        "primary_completion_rate": "67.4%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 50.4명"
+    },
+    "South Sudan": {
+        "country_code": "SSD",
+        "illiteracy_rate": "83.1%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "18.7%",
+        "primary_completion_rate": "61.7%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 52.7명"
+    },
+    "Rwanda": {
+        "country_code": "RWA",
+        "illiteracy_rate": "82.5%",
+        "school_electricity": "60.8%",
+        "out_of_school_rate": "25.1%",
+        "primary_completion_rate": "51.2%",
+        "reading_comprehension": "8.5%",
+        "pupil_teacher_ratio": "약 51.1명"
+    },
+    "Guinea": {
+        "country_code": "GIN",
+        "illiteracy_rate": "87.8%",
+        "school_electricity": "14.0%",
+        "out_of_school_rate": "19.4%",
+        "primary_completion_rate": "60.9%",
+        "reading_comprehension": "5.2%",
+        "pupil_teacher_ratio": "약 32.5명"
+    },
+    "Sierra Leone": {
+        "country_code": "SLE",
+        "illiteracy_rate": "93.0%",
+        "school_electricity": "13.0%",
+        "out_of_school_rate": "12.6%",
+        "primary_completion_rate": "62.7%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 59.9명"
+    },
+    "Cameroon": {
+        "country_code": "CMR",
+        "illiteracy_rate": "55.4%",
+        "school_electricity": "31.1%",
+        "out_of_school_rate": "4.8%",
+        "primary_completion_rate": "82.0%",
+        "reading_comprehension": "36.5%",
+        "pupil_teacher_ratio": "약 35.3명"
+    },
+    "South Africa": {
+        "country_code": "ZAF",
+        "illiteracy_rate": "29.9%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "2.4%",
+        "primary_completion_rate": "88.5%",
+        "reading_comprehension": "74.4%",
+        "pupil_teacher_ratio": "약 25.4명"
+    },
+    "India": {
+        "country_code": "IND",
+        "illiteracy_rate": "52.0%",
+        "school_electricity": "65.2%",
+        "out_of_school_rate": "7.7%",
+        "primary_completion_rate": "73.1%",
+        "reading_comprehension": "41.3%",
+        "pupil_teacher_ratio": "약 50.2명"
+    },
+    "Pakistan": {
+        "country_code": "PAK",
+        "illiteracy_rate": "51.9%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "8.2%",
+        "primary_completion_rate": "65.4%",
+        "reading_comprehension": "30.4%",
+        "pupil_teacher_ratio": "약 46.6명"
+    },
+    "Bangladesh": {
+        "country_code": "BGD",
+        "illiteracy_rate": "71.5%",
+        "school_electricity": "43.3%",
+        "out_of_school_rate": "6.9%",
+        "primary_completion_rate": "78.0%",
+        "reading_comprehension": "27.6%",
+        "pupil_teacher_ratio": "약 35.8명"
+    },
+    "Afghanistan": {
+        "country_code": "AFG",
+        "illiteracy_rate": "91.5%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "23.9%",
+        "primary_completion_rate": "41.8%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 47.4명"
+    },
+    "Nepal": {
+        "country_code": "NPL",
+        "illiteracy_rate": "57.4%",
+        "school_electricity": "6.6%",
+        "out_of_school_rate": "4.2%",
+        "primary_completion_rate": "77.2%",
+        "reading_comprehension": "20.8%",
+        "pupil_teacher_ratio": "약 28.1명"
+    },
+    "Sri Lanka": {
+        "country_code": "LKA",
+        "illiteracy_rate": "48.0%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "11.6%",
+        "primary_completion_rate": "70.0%",
+        "reading_comprehension": "42.1%",
+        "pupil_teacher_ratio": "약 32.0명"
+    },
+    "Indonesia": {
+        "country_code": "IDN",
+        "illiteracy_rate": "36.4%",
+        "school_electricity": "93.1%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "82.9%",
+        "reading_comprehension": "73.6%",
+        "pupil_teacher_ratio": "약 32.3명"
+    },
+    "Philippines": {
+        "country_code": "PHL",
+        "illiteracy_rate": "59.4%",
+        "school_electricity": "93.9%",
+        "out_of_school_rate": "3.5%",
+        "primary_completion_rate": "64.9%",
+        "reading_comprehension": "40.0%",
+        "pupil_teacher_ratio": "약 47.7명"
+    },
+    "Myanmar": {
+        "country_code": "MMR",
+        "illiteracy_rate": "69.1%",
+        "school_electricity": "27.4%",
+        "out_of_school_rate": "1.8%",
+        "primary_completion_rate": "64.3%",
+        "reading_comprehension": "40.6%",
+        "pupil_teacher_ratio": "약 51.8명"
+    },
+    "Cambodia": {
+        "country_code": "KHM",
+        "illiteracy_rate": "44.1%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "8.8%",
+        "primary_completion_rate": "68.3%",
+        "reading_comprehension": "36.4%",
+        "pupil_teacher_ratio": "약 33.1명"
+    },
+    "Laos": {
+        "country_code": "LAO",
+        "illiteracy_rate": "48.8%",
+        "school_electricity": "50.2%",
+        "out_of_school_rate": "10.2%",
+        "primary_completion_rate": "76.8%",
+        "reading_comprehension": "14.9%",
+        "pupil_teacher_ratio": "약 35.0명"
+    },
+    "Papua New Guinea": {
+        "country_code": "PNG",
+        "illiteracy_rate": "55.0%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "6.7%",
+        "primary_completion_rate": "76.9%",
+        "reading_comprehension": "28.0%",
+        "pupil_teacher_ratio": "약 29.5명"
+    },
+    "China": {
+        "country_code": "CHN",
+        "illiteracy_rate": "27.9%",
+        "school_electricity": "99.4%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "89.9%",
+        "reading_comprehension": "68.5%",
+        "pupil_teacher_ratio": "약 24.9명"
+    },
+    "Vietnam": {
+        "country_code": "VNM",
+        "illiteracy_rate": "50.3%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "5.2%",
+        "primary_completion_rate": "81.3%",
+        "reading_comprehension": "38.7%",
+        "pupil_teacher_ratio": "약 39.9명"
+    },
+    "Thailand": {
+        "country_code": "THA",
+        "illiteracy_rate": "19.2%",
+        "school_electricity": "99.8%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "93.8%",
+        "reading_comprehension": "74.2%",
+        "pupil_teacher_ratio": "약 19.0명"
+    },
+    "Malaysia": {
+        "country_code": "MYS",
+        "illiteracy_rate": "21.6%",
+        "school_electricity": "92.9%",
+        "out_of_school_rate": "3.4%",
+        "primary_completion_rate": "89.5%",
+        "reading_comprehension": "62.5%",
+        "pupil_teacher_ratio": "약 31.5명"
+    },
+    "Egypt": {
+        "country_code": "EGY",
+        "illiteracy_rate": "43.1%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "12.2%",
+        "primary_completion_rate": "77.3%",
+        "reading_comprehension": "20.6%",
+        "pupil_teacher_ratio": "약 44.1명"
+    },
+    "Iraq": {
+        "country_code": "IRQ",
+        "illiteracy_rate": "26.1%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "89.9%",
+        "reading_comprehension": "64.7%",
+        "pupil_teacher_ratio": "약 20.9명"
+    },
+    "Yemen": {
+        "country_code": "YEM",
+        "illiteracy_rate": "92.0%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "19.5%",
+        "primary_completion_rate": "49.0%",
+        "reading_comprehension": "8.5%",
+        "pupil_teacher_ratio": "약 42.2명"
+    },
+    "Morocco": {
+        "country_code": "MAR",
+        "illiteracy_rate": "52.6%",
+        "school_electricity": "96.2%",
+        "out_of_school_rate": "1.7%",
+        "primary_completion_rate": "72.9%",
+        "reading_comprehension": "26.5%",
+        "pupil_teacher_ratio": "약 45.3명"
+    },
+    "Syria": {
+        "country_code": "SYR",
+        "illiteracy_rate": "91.9%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "17.8%",
+        "primary_completion_rate": "69.2%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 55.7명"
+    },
+    "Tunisia": {
+        "country_code": "TUN",
+        "illiteracy_rate": "61.3%",
+        "school_electricity": "99.9%",
+        "out_of_school_rate": "14.3%",
+        "primary_completion_rate": "75.5%",
+        "reading_comprehension": "24.3%",
+        "pupil_teacher_ratio": "약 33.4명"
+    },
+    "Jordan": {
+        "country_code": "JOR",
+        "illiteracy_rate": "21.1%",
+        "school_electricity": "35.8%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "95.4%",
+        "reading_comprehension": "63.0%",
+        "pupil_teacher_ratio": "약 38.5명"
+    },
+    "Libya": {
+        "country_code": "LBY",
+        "illiteracy_rate": "31.5%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "87.2%",
+        "reading_comprehension": "68.5%",
+        "pupil_teacher_ratio": "약 20.8명"
+    },
+    "Brazil": {
+        "country_code": "BRA",
+        "illiteracy_rate": "25.5%",
+        "school_electricity": "95.8%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "92.3%",
+        "reading_comprehension": "51.7%",
+        "pupil_teacher_ratio": "약 31.7명"
+    },
+    "Mexico": {
+        "country_code": "MEX",
+        "illiteracy_rate": "23.8%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "4.7%",
+        "primary_completion_rate": "91.9%",
+        "reading_comprehension": "58.7%",
+        "pupil_teacher_ratio": "약 17.8명"
+    },
+    "Colombia": {
+        "country_code": "COL",
+        "illiteracy_rate": "38.6%",
+        "school_electricity": "95.7%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "81.1%",
+        "reading_comprehension": "65.1%",
+        "pupil_teacher_ratio": "약 31.6명"
+    },
+    "Guatemala": {
+        "country_code": "GTM",
+        "illiteracy_rate": "25.1%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "5.3%",
+        "primary_completion_rate": "97.4%",
+        "reading_comprehension": "67.8%",
+        "pupil_teacher_ratio": "약 27.8명"
+    },
+    "Haiti": {
+        "country_code": "HTI",
+        "illiteracy_rate": "83.1%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "23.7%",
+        "primary_completion_rate": "62.9%",
+        "reading_comprehension": "2.0%",
+        "pupil_teacher_ratio": "약 48.6명"
+    },
+    "Honduras": {
+        "country_code": "HND",
+        "illiteracy_rate": "49.3%",
+        "school_electricity": "91.2%",
+        "out_of_school_rate": "7.2%",
+        "primary_completion_rate": "67.1%",
+        "reading_comprehension": "32.0%",
+        "pupil_teacher_ratio": "약 15.2명"
+    },
+    "Peru": {
+        "country_code": "PER",
+        "illiteracy_rate": "25.1%",
+        "school_electricity": "89.4%",
+        "out_of_school_rate": "6.2%",
+        "primary_completion_rate": "91.6%",
+        "reading_comprehension": "51.3%",
+        "pupil_teacher_ratio": "약 25.3명"
+    },
+    "Bolivia": {
+        "country_code": "BOL",
+        "illiteracy_rate": "63.0%",
+        "school_electricity": "72.1%",
+        "out_of_school_rate": "6.9%",
+        "primary_completion_rate": "65.3%",
+        "reading_comprehension": "26.9%",
+        "pupil_teacher_ratio": "약 33.7명"
+    },
+    "Argentina": {
+        "country_code": "ARG",
+        "illiteracy_rate": "32.5%",
+        "school_electricity": "96.8%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "86.5%",
+        "reading_comprehension": "68.4%",
+        "pupil_teacher_ratio": "약 29.6명"
+    },
+    "Turkey": {
+        "country_code": "TUR",
+        "illiteracy_rate": "30.1%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "87.4%",
+        "reading_comprehension": "64.5%",
+        "pupil_teacher_ratio": "약 20.9명"
+    },
+    "Uzbekistan": {
+        "country_code": "UZB",
+        "illiteracy_rate": "65.7%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "9.2%",
+        "primary_completion_rate": "73.5%",
+        "reading_comprehension": "44.4%",
+        "pupil_teacher_ratio": "약 24.7명"
+    },
+    "Tajikistan": {
+        "country_code": "TJK",
+        "illiteracy_rate": "68.6%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "9.2%",
+        "primary_completion_rate": "68.2%",
+        "reading_comprehension": "17.4%",
+        "pupil_teacher_ratio": "약 44.7명"
+    },
+    "Kyrgyzstan": {
+        "country_code": "KGZ",
+        "illiteracy_rate": "54.9%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "3.8%",
+        "primary_completion_rate": "76.3%",
+        "reading_comprehension": "28.4%",
+        "pupil_teacher_ratio": "약 34.9명"
+    },
+    "Romania": {
+        "country_code": "ROU",
+        "illiteracy_rate": "34.9%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "1.1%",
+        "primary_completion_rate": "90.9%",
+        "reading_comprehension": "66.6%",
+        "pupil_teacher_ratio": "약 31.4명"
+    },
+    "Germany": {
+        "country_code": "DEU",
+        "illiteracy_rate": "5.1%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "1.8%",
+        "primary_completion_rate": "99.8%",
+        "reading_comprehension": "84.0%",
+        "pupil_teacher_ratio": "약 17.3명"
+    },
+    "France": {
+        "country_code": "FRA",
+        "illiteracy_rate": "6.2%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.7%",
+        "reading_comprehension": "77.6%",
+        "pupil_teacher_ratio": "약 17.6명"
+    },
+    "United Kingdom": {
+        "country_code": "GBR",
+        "illiteracy_rate": "6.5%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.8%",
+        "reading_comprehension": "80.8%",
+        "pupil_teacher_ratio": "약 11.2명"
+    },
+    "Poland": {
+        "country_code": "POL",
+        "illiteracy_rate": "2.4%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.8%",
+        "reading_comprehension": "73.4%",
+        "pupil_teacher_ratio": "약 12.4명"
+    },
+    "Finland": {
+        "country_code": "FIN",
+        "illiteracy_rate": "2.4%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.8%",
+        "reading_comprehension": "83.3%",
+        "pupil_teacher_ratio": "약 8.0명"
+    },
+    "United States": {
+        "country_code": "USA",
+        "illiteracy_rate": "4.7%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "1.2%",
+        "primary_completion_rate": "99.7%",
+        "reading_comprehension": "88.8%",
+        "pupil_teacher_ratio": "약 8.0명"
+    },
+    "Canada": {
+        "country_code": "CAN",
+        "illiteracy_rate": "4.2%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.8%",
+        "reading_comprehension": "77.0%",
+        "pupil_teacher_ratio": "약 21.9명"
+    },
+    "Australia": {
+        "country_code": "AUS",
+        "illiteracy_rate": "6.0%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.7%",
+        "reading_comprehension": "79.0%",
+        "pupil_teacher_ratio": "약 11.3명"
+    },
+    "Japan": {
+        "country_code": "JPN",
+        "illiteracy_rate": "6.7%",
+        "school_electricity": "데이터 없음",
+        "out_of_school_rate": "0.1%",
+        "primary_completion_rate": "99.7%",
+        "reading_comprehension": "86.5%",
+        "pupil_teacher_ratio": "약 32.8명"
+    },
+    "South Korea": {
+        "country_code": "KOR",
+        "illiteracy_rate": "4.1%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "1.7%",
+        "primary_completion_rate": "99.7%",
+        "reading_comprehension": "90.9%",
+        "pupil_teacher_ratio": "약 20.7명"
+    },
+    "Singapore": {
+        "country_code": "SGP",
+        "illiteracy_rate": "4.8%",
+        "school_electricity": "100.0%",
+        "out_of_school_rate": "0.3%",
+        "primary_completion_rate": "99.8%",
+        "reading_comprehension": "79.7%",
+        "pupil_teacher_ratio": "약 19.2명"
+    }
+}

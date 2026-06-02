@@ -1,27 +1,9 @@
-const admin = require('firebase-admin');
-// 1. 방금 만든 막강한 전체 국가 JSON 데이터 불러오기!
+// Firebase Admin SDK 관련 코드를 모두 삭제하여 서버를 가볍게 만들었습니다!
 const sdgData = require('../data/sdg4_data.json'); 
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
-
-// Firebase Admin 초기화 (서버 콜드스타트 시 중복 초기화 방지)
-if (!admin.apps.length && process.env.FIREBASE_PROJECT_ID) {
-    try {
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-            })
-        });
-    } catch (error) {
-        console.error('Firebase 초기화 에러:', error);
-    }
-}
-
-const db = admin.apps.length ? admin.firestore() : null;
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -37,9 +19,6 @@ export default async function handler(req, res) {
     let targetCountry = "알 수 없음";
     let targetData = null;
 
-    // Object.keys를 이용해 sdgData.json에 있는 국가 이름(영어) 확인
-    // 참고: 사용자가 한국어로 질문할 경우를 대비한 번역 로직 추가 가능하지만, 
-    // 우선 데이터에 있는 영문 국가명이 질문에 포함되었는지 체크합니다.
     for (const country_en of Object.keys(sdgData)) {
         if (message.toLowerCase().includes(country_en.toLowerCase())) {
             targetCountry = country_en;
@@ -99,19 +78,8 @@ export default async function handler(req, res) {
 
         const aiMessage = data.choices[0].message.content;
 
-        // Firebase Firestore에 대화 로그 저장
-        if (db) {
-            try {
-                await db.collection('chat_logs').add({
-                    user_message: message,
-                    ai_reply: aiMessage,
-                    target_country: targetCountry,
-                    timestamp: admin.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (dbError) {
-                console.error("Firebase 저장 에러:", dbError);
-            }
-        }
+        // 🔥 백엔드에서 chat_logs에 저장하던 부분 완전히 삭제됨 🔥
+        // 이제 프론트엔드가 users 폴더에 알아서 저장합니다!
 
         return res.status(200).json({
             reply: aiMessage,

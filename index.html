@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduMap AI</title>
-    <!-- Leaflet CSS (지도) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* 기본 리셋 및 폰트 */
@@ -104,6 +103,14 @@
             border-radius: 16px 16px 0 0; font-weight: bold;
             display: flex; justify-content: space-between; align-items: center;
         }
+        /* TTS 중지 버튼 스타일 추가 */
+        .stop-audio-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.5); color: white; 
+            padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .stop-audio-btn:hover { background: rgba(255,255,255,0.2); }
+
         #chat-log {
             flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
         }
@@ -130,7 +137,6 @@
 </head>
 <body>
 
-    <!-- 1. 홍보용 인트로(랜딩) 페이지 -->
     <div id="intro-screen">
         <nav class="navbar">
             <div class="logo">EduMap AI</div>
@@ -158,11 +164,9 @@
         </section>
     </div>
 
-    <!-- 메인 앱 래퍼 (지도와 챗봇) -->
     <div id="main-app">
         <div id="map"></div>
         
-        <!-- 2. 로그인 및 회원가입 모달 -->
         <div id="login-overlay" style="display: none;">
             <div class="login-box">
                 <h2 id="auth-title">EduMap AI 로그인</h2>
@@ -172,7 +176,6 @@
                 <button onclick="window.handleAuth()" id="auth-btn">로그인 및 시작</button>
                 <p id="login-error" style="color: red; font-size: 12px; margin-top: 10px; display: none;"></p>
                 
-                <!-- 회원가입/로그인 전환 버튼 -->
                 <div style="margin-top: 15px; font-size: 14px; color: #4b5563;">
                     <span id="auth-switch-text">아직 계정이 없으신가요?</span>
                     <a href="#" onclick="window.toggleAuthMode()" id="auth-switch-link" style="color: #2563eb; text-decoration: none; font-weight: bold;">회원가입</a>
@@ -180,10 +183,10 @@
             </div>
         </div>
 
-        <!-- 3. 챗봇 컨테이너 (초기엔 숨김) -->
         <div id="chat-container" style="display: none;">
             <div class="chat-header">
                 <span>EduMap AI Assistant</span>
+                <button onclick="window.stopAudio()" class="stop-audio-btn">🔇 음성 중지</button>
             </div>
             <div id="chat-log">
                 <div class="chat-message ai">🤖 안녕하세요! 궁금한 국가의 교육 현황(예: Nigeria, Ethiopia)을 영어 국가명과 함께 물어보세요!</div>
@@ -195,10 +198,8 @@
         </div>
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Firebase SDK (Auth + Firestore 추가) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -216,7 +217,7 @@
         };
 
         let auth;
-        let db; // Firestore 변수 추가
+        let db; 
         
         try {
             const app = initializeApp(firebaseConfig);
@@ -315,6 +316,33 @@
             }
         };
 
+        // 🔥 [추가됨] 텍스트를 음성으로 읽어주는 함수 (TTS)
+        window.speakText = function(text) {
+            if ('speechSynthesis' in window) {
+                // 이전 음성이 재생 중이면 멈춤
+                window.speechSynthesis.cancel();
+                
+                // HTML 태그(<br>, <b> 등)와 마크다운 기호를 정규식으로 제거하여 순수 텍스트만 추출
+                const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/[*#]/g, '');
+                
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'ko-KR'; // 한국어 설정 (영어도 기본적으로 읽어줌)
+                utterance.rate = 1.0;     // 읽기 속도 (1.0이 기본)
+                
+                // 음성 재생 시작
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("이 브라우저는 TTS(음성 합성)를 지원하지 않습니다.");
+            }
+        };
+
+        // 🔥 [추가됨] 사용자가 음성을 도중에 끄고 싶을 때 사용하는 함수
+        window.stopAudio = function() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        };
+
         window.sendMessage = async function() {
             const inputField = document.getElementById('user-input');
             const message = inputField.value.trim();
@@ -344,27 +372,26 @@
                     const formattedReply = data.reply.replace(/\n/g, '<br>');
                     chatLog.innerHTML += `<div class="chat-message ai">🤖 AI:<br>${formattedReply}</div>`;
                     
-                    // 🔥 [핵심 업데이트] Firestore 저장 경로를 유저별로 분류합니다.
+                    // 🔥 [추가됨] AI의 답변 텍스트를 소리내어 읽기 실행!
+                    window.speakText(data.reply);
+                    
+                    // Firestore 유저별 대화 로그 저장
                     if (db) {
                         try {
                             const userEmail = auth.currentUser ? auth.currentUser.email : "비회원";
-                            
-                            // 경로를 'users' -> '유저 이메일' -> 'chat_logs' 로 변경하여 그룹화
                             const userChatLogRef = collection(db, "users", userEmail, "chat_logs");
-                            
                             await addDoc(userChatLogRef, {
                                 user_message: message,
                                 ai_reply: data.reply,
                                 country_code: data.countryCode || "UNKNOWN",
                                 timestamp: serverTimestamp()
                             });
-                            console.log("Firestore 유저별 대화 로그 저장 완료!");
                         } catch (dbError) {
                             console.error("Firestore 저장 실패:", dbError);
                         }
                     }
 
-                    // 백엔드에서 받은 국가코드(ISO3)로 실제 위경도를 찾아 지도를 날립니다
+                    // 좌표 이동
                     if (data.countryCode && data.countryCode !== "UNKNOWN" && map) {
                         try {
                             const geoResponse = await fetch(`https://restcountries.com/v3.1/alpha/${data.countryCode}`);

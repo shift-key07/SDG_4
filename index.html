@@ -6,32 +6,55 @@
     <title>EduMap AI</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        /* 기본 리셋 및 폰트 */
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Pretendard', sans-serif; overflow: hidden; }
         
+        /* 1. 홍보용 인트로(랜딩) 페이지 스타일 */
         #intro-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff; z-index: 200; overflow-y: auto;
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
         
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 210; border-bottom: 1px solid #eee; }
+        .navbar { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 50px; background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 210; 
+            border-bottom: 1px solid #eee; 
+        }
         .navbar .logo { font-size: 1.5rem; font-weight: 800; color: #2563eb; }
-        .navbar .nav-links a { margin-left: 30px; text-decoration: none; color: #4b5563; font-weight: 600; transition: color 0.3s; }
+        .navbar .nav-links a { 
+            margin-left: 30px; text-decoration: none; color: #4b5563; 
+            font-weight: 600; transition: color 0.3s; 
+        }
         .navbar .nav-links a:hover { color: #2563eb; }
 
-        .hero { position: relative; padding: 160px 20px; text-align: center; color: white; background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; }
-        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); z-index: 1; }
+        .hero { 
+            position: relative; padding: 160px 20px; text-align: center; color: white; 
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; 
+        }
+        .hero-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(15, 23, 42, 0.75); z-index: 1; 
+        }
         .hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; }
         .hero h1 { font-size: 3.5rem; margin-bottom: 20px; font-weight: 800; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .hero p { font-size: 1.2rem; margin-bottom: 40px; color: #e2e8f0; line-height: 1.6; }
         
-        .start-btn { padding: 18px 48px; font-size: 1.2rem; background: #2563eb; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4); transition: all 0.3s ease; }
+        .start-btn {
+            padding: 18px 48px; font-size: 1.2rem; background: #2563eb; color: white;
+            border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4); transition: all 0.3s ease;
+        }
         .start-btn:hover { background: #1d4ed8; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.6); }
 
         .features { padding: 100px 20px; background: #f8fafc; text-align: center; }
         .features h2 { font-size: 2.5rem; margin-bottom: 60px; color: #1e293b; font-weight: 800; }
         .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .feature-card { background: white; padding: 50px 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); transition: transform 0.3s, box-shadow 0.3s; }
+        .feature-card { 
+            background: white; padding: 50px 30px; border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); transition: transform 0.3s, box-shadow 0.3s; 
+        }
         .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
         .feature-card .icon { font-size: 3.5rem; margin-bottom: 25px; }
         .feature-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #0f172a; font-weight: 700; }
@@ -39,35 +62,75 @@
         
         .promo-footer { background: #0f172a; color: #94a3b8; text-align: center; padding: 40px 20px; font-size: 0.9rem; }
 
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 150; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: white; padding: 40px; border-radius: 12px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .login-box input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-        .login-box button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
+        /* 2. 로그인 모달 스타일 */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 150;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 12px;
+            width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .login-box input {
+            width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc;
+            border-radius: 6px; font-size: 14px; box-sizing: border-box;
+        }
+        .login-box button {
+            width: 100%; padding: 12px; background: #2563eb; color: white;
+            border: none; border-radius: 6px; font-size: 16px; cursor: pointer;
+            margin-top: 10px; transition: background 0.3s;
+        }
         .login-box button:hover { background: #1d4ed8; }
 
-        #main-app { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; z-index: -1; transition: opacity 0.5s ease; }
+        /* 3. 메인 앱 영역 (지도 & 챗봇) */
+        #main-app { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            opacity: 0; z-index: -1; transition: opacity 0.5s ease; 
+        }
+        
         #map { width: 100%; height: 100vh; z-index: 1; }
 
-        #chat-container { position: absolute; bottom: 30px; right: 30px; width: 380px; height: 500px; background: rgba(255, 255, 255, 0.95); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; z-index: 10; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); }
-        .chat-header { padding: 15px 20px; background: #2563eb; color: white; border-radius: 16px 16px 0 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        
-        .stop-audio-btn { background: none; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+        #chat-container {
+            position: absolute; bottom: 30px; right: 30px;
+            width: 380px; height: 500px; background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; z-index: 10;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5);
+        }
+        .chat-header {
+            padding: 15px 20px; background: #2563eb; color: white;
+            border-radius: 16px 16px 0 0; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        /* TTS 중지 버튼 스타일 추가 */
+        .stop-audio-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.5); color: white; 
+            padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;
+            transition: background 0.2s;
+        }
         .stop-audio-btn:hover { background: rgba(255,255,255,0.2); }
-        
-        /* 음성 로딩 중일 때 깜빡이는 효과 */
-        .tts-loading { animation: pulse 1s infinite; color: #fbbf24; border-color: #fbbf24; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        #chat-log { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        #chat-log {
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
         .chat-message { padding: 12px 16px; border-radius: 12px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; }
         .chat-message.user { background: #f1f5f9; color: #1e293b; align-self: flex-end; border-bottom-right-radius: 4px; }
         .chat-message.ai { background: #dbeafe; color: #1e40af; align-self: flex-start; border-bottom-left-radius: 4px; }
         .chat-message.loading { background: #e2e8f0; color: #64748b; font-style: italic; }
         
-        .chat-input-area { display: flex; padding: 15px; border-top: 1px solid #e2e8f0; background: white; border-radius: 0 0 16px 16px; }
-        #user-input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 0.95rem; transition: border-color 0.2s; }
+        .chat-input-area {
+            display: flex; padding: 15px; border-top: 1px solid #e2e8f0; background: white; border-radius: 0 0 16px 16px;
+        }
+        #user-input {
+            flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px;
+            outline: none; font-size: 0.95rem; transition: border-color 0.2s;
+        }
         #user-input:focus { border-color: #2563eb; }
-        #send-btn { background: #2563eb; color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        #send-btn {
+            background: #2563eb; color: white; border: none; padding: 0 20px;
+            margin-left: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s;
+        }
         #send-btn:hover { background: #1d4ed8; }
         #send-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     </style>
@@ -123,7 +186,7 @@
         <div id="chat-container" style="display: none;">
             <div class="chat-header">
                 <span>EduMap AI Assistant</span>
-                <button id="tts-btn" onclick="window.stopAudio()" class="stop-audio-btn" style="display:none;">🔇 음성 중지</button>
+                <button onclick="window.stopAudio()" class="stop-audio-btn">🔇 음성 중지</button>
             </div>
             <div id="chat-log">
                 <div class="chat-message ai">🤖 안녕하세요! 궁금한 국가의 교육 현황(예: Nigeria, Ethiopia)을 영어 국가명과 함께 물어보세요!</div>
@@ -142,6 +205,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // 본인의 진짜 Firebase 웹 설정 값
         const firebaseConfig = {
             apiKey: "AIzaSyBhQfXTs8hwRkTClBlv-HXN6PUc-f60jj4",
             authDomain: "sdg4-a5074.firebaseapp.com",
@@ -159,10 +223,12 @@
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app); 
+            console.log("Firebase & Firestore 초기화 성공");
         } catch (e) {
             console.error("Firebase 초기화 실패:", e);
         }
 
+        // --- 지도 초기화 ---
         let map = L.map('map', { zoomControl: false }).setView([20, 0], 3);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap'
@@ -170,8 +236,10 @@
         L.control.zoom({ position: 'topright' }).addTo(map);
         
         let currentMarker = null;
+
         setTimeout(() => { map.invalidateSize(); }, 500);
 
+        // --- UI 제어 함수들 ---
         window.startApp = function() {
             document.getElementById('intro-screen').style.display = 'none';
             const mainApp = document.getElementById('main-app');
@@ -212,13 +280,17 @@
             const errorMsg = document.getElementById('login-error');
             const authBtn = document.getElementById('auth-btn');
 
-            if(!email || !password) return;
+            if(!email || !password) {
+                errorMsg.innerText = "이메일과 비밀번호를 입력해주세요.";
+                errorMsg.style.display = 'block';
+                return;
+            }
 
             authBtn.innerText = isLoginMode ? "로그인 중..." : "가입 중...";
             authBtn.disabled = true;
 
             try {
-                if(!auth) throw new Error("Firebase Auth Error");
+                if(!auth) throw new Error("Firebase Auth가 초기화되지 않았습니다.");
                 
                 if (isLoginMode) {
                     await signInWithEmailAndPassword(auth, email, password);
@@ -228,73 +300,47 @@
                 
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('chat-container').style.display = 'flex';
-            } catch (error) {
-                errorMsg.style.display = 'block';
-                if (error.code === 'auth/email-already-in-use') errorMsg.innerText = "이미 가입된 이메일입니다.";
-                else if (error.code === 'auth/weak-password') errorMsg.innerText = "비밀번호는 6자리 이상이어야 합니다.";
-                else errorMsg.innerText = "인증 실패: 정보를 확인해주세요.";
                 
+            } catch (error) {
+                console.error("Auth failed:", error);
+                errorMsg.style.display = 'block';
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMsg.innerText = "이미 가입된 이메일입니다.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMsg.innerText = "비밀번호는 6자리 이상이어야 합니다.";
+                } else {
+                    errorMsg.innerText = "인증 실패: 정보를 확인해주세요.";
+                }
                 authBtn.innerText = isLoginMode ? "로그인 및 시작" : "가입하고 시작하기";
                 authBtn.disabled = false;
             }
         };
 
-        // 🔥 [완전 개편] OpenAI API 연동 고품질 TTS 기능
-        let currentAudio = null;
-
-        window.speakText = async function(text) {
-            // 재생 중인 오디오가 있다면 정지
-            window.stopAudio();
-            
-            const ttsBtn = document.getElementById('tts-btn');
-            ttsBtn.style.display = 'block';
-            ttsBtn.innerText = "⏳ 음성 준비 중...";
-            ttsBtn.classList.add('tts-loading');
-
-            // 텍스트에서 특수문자 제거
-            const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/[*#]/g, '');
-
-            try {
-                // 방금 새로 만든 백엔드 Vercel API(/api/tts)에 요청
-                const response = await fetch('/api/tts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: cleanText })
-                });
-
-                if (response.ok) {
-                    // 서버로부터 받은 오디오 버퍼를 변환하여 재생
-                    const blob = await response.blob();
-                    const audioUrl = URL.createObjectURL(blob);
-                    
-                    currentAudio = new Audio(audioUrl);
-                    currentAudio.play();
-                    
-                    ttsBtn.innerText = "🔇 음성 중지";
-                    ttsBtn.classList.remove('tts-loading');
-                    
-                    // 오디오 재생이 끝나면 버튼 숨기기
-                    currentAudio.onended = () => {
-                        ttsBtn.style.display = 'none';
-                    };
-                } else {
-                    console.error("TTS 요청 실패");
-                    ttsBtn.style.display = 'none';
-                }
-            } catch (err) {
-                console.error("TTS 통신 에러:", err);
-                ttsBtn.style.display = 'none';
+        // 🔥 [추가됨] 텍스트를 음성으로 읽어주는 함수 (TTS)
+        window.speakText = function(text) {
+            if ('speechSynthesis' in window) {
+                // 이전 음성이 재생 중이면 멈춤
+                window.speechSynthesis.cancel();
+                
+                // HTML 태그(<br>, <b> 등)와 마크다운 기호를 정규식으로 제거하여 순수 텍스트만 추출
+                const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/[*#]/g, '');
+                
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'ko-KR'; // 한국어 설정 (영어도 기본적으로 읽어줌)
+                utterance.rate = 1.0;     // 읽기 속도 (1.0이 기본)
+                
+                // 음성 재생 시작
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("이 브라우저는 TTS(음성 합성)를 지원하지 않습니다.");
             }
         };
 
+        // 🔥 [추가됨] 사용자가 음성을 도중에 끄고 싶을 때 사용하는 함수
         window.stopAudio = function() {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0; // 재생 위치 초기화
-                currentAudio = null;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
-            document.getElementById('tts-btn').style.display = 'none';
-            document.getElementById('tts-btn').classList.remove('tts-loading');
         };
 
         window.sendMessage = async function() {
@@ -312,9 +358,6 @@
             chatLog.scrollTop = chatLog.scrollHeight;
             btn.disabled = true;
 
-            // 혹시 이전 답변을 읽고 있다면 중지
-            window.stopAudio();
-
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
@@ -329,9 +372,10 @@
                     const formattedReply = data.reply.replace(/\n/g, '<br>');
                     chatLog.innerHTML += `<div class="chat-message ai">🤖 AI:<br>${formattedReply}</div>`;
                     
-                    // 🔥 AI의 텍스트 답변이 도착하면 즉시 고품질 OpenAI 음성 호출!
+                    // 🔥 [추가됨] AI의 답변 텍스트를 소리내어 읽기 실행!
                     window.speakText(data.reply);
                     
+                    // Firestore 유저별 대화 로그 저장
                     if (db) {
                         try {
                             const userEmail = auth.currentUser ? auth.currentUser.email : "비회원";
@@ -347,6 +391,7 @@
                         }
                     }
 
+                    // 좌표 이동
                     if (data.countryCode && data.countryCode !== "UNKNOWN" && map) {
                         try {
                             const geoResponse = await fetch(`https://restcountries.com/v3.1/alpha/${data.countryCode}`);
@@ -359,7 +404,9 @@
                                 
                                 map.flyTo([lat, lng], 5, { animate: true, duration: 2 });
                                 
-                                if (currentMarker) map.removeLayer(currentMarker);
+                                if (currentMarker) {
+                                    map.removeLayer(currentMarker);
+                                }
                                 currentMarker = L.marker([lat, lng]).addTo(map)
                                     .bindPopup(`<b>${countryName}</b><br>SDG 4 교육 지표 분석 완료`)
                                     .openPopup();
